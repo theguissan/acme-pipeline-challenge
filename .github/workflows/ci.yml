@@ -1,4 +1,4 @@
-name: Pipeline CI/CD Desorganizado - ACME
+name: Pipeline CI/CD ACME
 
 on:
   push:
@@ -9,5 +9,13 @@ on:
 
 jobs:
   develop-pipeline:
-    if: github .ref == 'refs/heads/main'
-    uses: .github/workflow-templates/build.yml@main
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/test.yml
+
+  release-pipeline:
+    if: github.ref == 'refs/heads/release'
+    uses: ./.github/workflows/test.yml
+    
+  main-pipeline:
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/test.yml
