@@ -1,0 +1,13 @@
+name: Pipeline CI/CD Desorganizado - ACME
+
+on:
+  push:
+    branches:
+      - develop
+      - release
+      - main
+
+jobs:
+  develop-pipeline:
+    if: github .ref == 'refs/heads/main'
+    uses: .github/workflow-templates/build.yml@main
