@@ -1,0 +1,15 @@
+name: Build Microservice Images
+
+on:
+  workflow_call:
+
+jobs:
+  build-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Construir Docker Image Microserviço 1
+        run: docker build -t microservice1:latest ./microservice1
+      - name: Construir Docker Image Microserviço 2
+        run: docker build -t microservice2:latest ./microservice2
