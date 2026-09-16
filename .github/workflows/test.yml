@@ -1,14 +1,14 @@
-name: Build
+name: Test
 
 on:
-  workflow_call
+  workflow_call:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -19,3 +19,17 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
+
+      - name: Run Unity Tests
+        run: npm run test:unit
+
+      - name: Run Integration Tests
+        run: npm run test:integration
+
+      - name: Run Performance Tests
+        run: ab -n 1000 -c 10 http://localhost:3000/
+
+  build-microservices-images:
+    if: github.ref == 'refs/heads/develop'
+    needs: test
+    uses: ./.github/workflows/build-microservices-images.yml
