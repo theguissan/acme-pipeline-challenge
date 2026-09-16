@@ -13,3 +13,10 @@ jobs:
     uses: ./.github/workflows/test.yml
     secrets:  
       SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+
+  build:
+    if: github.ref != 'refs/heads/develop'
+    uses: ./.github/workflows/build-microservices-images.yml
+    needs: [tests]
+    with:
+      services: '["microservice1", "microservice2"]'
