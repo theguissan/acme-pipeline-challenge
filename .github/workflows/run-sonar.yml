@@ -1,0 +1,22 @@
+name: Run Sonar Analysis
+
+
+on:
+  workflow_call:
+
+jobs:
+
+  run-sonar-scan:
+    runs-on: ubuntu-latest
+    env:
+      SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+      SONAR_HOST_URL: http://localhost:9000
+    steps:
+
+      - uses: ./.github/actions/install-dependencies
+
+      - name: Verificação de Código com SonarQube
+        run: |
+          sonar-scanner \
+          -Dsonar.projectKey=acme_project \
+          -Dsonar.sources=.
