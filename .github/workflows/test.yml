@@ -25,7 +25,3 @@ jobs:
     uses: ./.github/workflows/run-sonar.yml
     secrets:
       SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
-
-  build-microservices-images:
-    needs: run-primary-tests
-    uses: ./.github/workflows/build-microservices-images.yml
