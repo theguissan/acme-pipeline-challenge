@@ -4,21 +4,11 @@ on:
   workflow_call:
 
 jobs:
-  test:
+  run-primary-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          #tries to use node version from .nvmrc or .node-version file from root. use 14.x if neither exists.
-          node-version-file: '.nvmrc'
-          node-version: '14.x'
-
-      - name: Install Dependencies
-        run: npm install
+      - uses: ./.github/actions/install-dependencies
 
       - name: Run Unity Tests
         run: npm run test:unit
@@ -29,7 +19,13 @@ jobs:
       - name: Run Performance Tests
         run: ab -n 1000 -c 10 http://localhost:3000/
 
+  run-sonar-scan:
+    if: github.ref != 'refs/heads/develop'
+    needs: run-primary-tests
+    uses: ./.github/workflows/run-sonar.yml
+    secrets:
+      SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+
   build-microservices-images:
-    if: github.ref == 'refs/heads/develop'
-    needs: test
+    needs: run-primary-tests
     uses: ./.github/workflows/build-microservices-images.yml
