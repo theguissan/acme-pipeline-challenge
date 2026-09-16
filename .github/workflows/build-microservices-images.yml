@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-      - name: Construir Docker Image Microserviço 1
+      - name: Build Docker Image Microserviço 1
         run: docker build -t microservice1:latest ./microservice1
-      - name: Construir Docker Image Microserviço 2
+      - name: Build Docker Image Microserviço 2
         run: docker build -t microservice2:latest ./microservice2
