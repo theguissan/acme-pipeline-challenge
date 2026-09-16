@@ -1,15 +1,52 @@
 name: Build Microservice Images
 
-on:
+on: 
   workflow_call:
+    inputs:
+      services:
+        description: 'List of microservices to be build, must be in JSON format, e.g., ["ms1","ms2"]'
+        type: string
+        required: true
 
 jobs:
   build-images:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: ${{ fromJson(inputs.services) }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-      - name: Build Docker Image Microserviço 1
-        run: docker build -t microservice1:latest ./microservice1
-      - name: Build Docker Image Microserviço 2
-        run: docker build -t microservice2:latest ./microservice2
+
+      - name: Build Docker Image for ${{ matrix.service }}
+        run: docker build -t ${{ matrix.service }}:latest ./${{ matrix.service }}
+
+      - name: Create Tar Artifact for ${{ matrix.service }}
+        run: docker save ${{ matrix.service }}:latest -o ${{ matrix.service }}.tar
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.service }}-image
+          path: ${{ matrix.service }}.tar
+          retention-days: 1
+
+  test-images:
+    runs-on: ubuntu-latest 
+    needs: [build-images]
+    strategy:
+      matrix:
+        service: ${{ fromJson(inputs.services )}}
+    steps:
+
+      - name: Download Docker Images
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.service }}-image
+
+      - name: Load Docker images
+        run: docker load -i ${{ matrix.service }}.tar
+        
+      - uses: ./.github/actions/run-trivy-scan
+        with:
+          image: ${{ matrix.service }}:latest
