@@ -8,14 +8,9 @@ on:
       - main
 
 jobs:
-  develop-pipeline:
-    if: github.ref == 'refs/heads/develop'
-    uses: ./.github/workflows/test.yml
 
-  release-pipeline:
-    if: github.ref == 'refs/heads/release'
-    uses: ./.github/workflows/test.yml
-    
-  main-pipeline:
+  tests:
     if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/test.yml
+    secrets:  
+      SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
