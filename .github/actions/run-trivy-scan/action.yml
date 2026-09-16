@@ -1,0 +1,15 @@
+name: Run Trivy Scan
+description: Scan Vulnerabilites of Microservice Image
+
+inputs:
+  image:
+    required: true
+    type: string
+
+runs:
+  using: composite
+  steps:
+
+      - name: Test ${{inputs.image}} image
+        run: trivy image --severity HIGH,CRITICAL ${{inputs.image}}
+        shell: bash
