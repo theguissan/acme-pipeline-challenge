@@ -8,20 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: ./.github/actions/install-dependencies
-
-      - name: Run Unity Tests
-        run: npm run test:unit
-
-      - name: Run Integration Tests
-        run: npm run test:integration
-
-      - name: Run Performance Tests
-        run: ab -n 1000 -c 10 http://localhost:3000/
+      - uses: ./.github/actions/run-primary-tests
 
   run-sonar-scan:
     if: github.ref != 'refs/heads/develop'
-    needs: run-primary-tests
+    needs: [run-primary-tests]
     uses: ./.github/workflows/run-sonar.yml
     secrets:
       SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}

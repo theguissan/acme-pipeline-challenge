@@ -1,0 +1,21 @@
+name: Run Primary Tests
+description: Run Unit, Integration and Performance tests
+
+
+runs:
+  using: composite
+  steps:
+
+      - uses: ./.github/actions/install-dependencies
+
+      - name: Run Unity Tests
+        run: npm run test:unit
+        shell: bash
+
+      - name: Run Integration Tests
+        run: npm run test:integration
+        shell: bash
+
+      - name: Run Performance Tests
+        run: ab -n 1000 -c 10 http://localhost:3000/
+        shell: bash
