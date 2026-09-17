@@ -16,7 +16,7 @@ jobs:
 
   build:
     if: github.ref != 'refs/heads/develop'
-    uses: ./.github/workflows/build-microservices-images.yml
+    uses: ./.github/workflows/build.yml
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
