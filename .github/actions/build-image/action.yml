@@ -1,0 +1,28 @@
+name: Build Docker Image
+description: Build Docker Image for given image
+
+inputs:
+  image:
+    required: true
+
+runs:
+  using: composite
+  steps:
+
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Build Docker Image for ${{ inputs.image }}
+      run: docker build -t ${{ inputs.image }}:latest ./${{ inputs.image }}
+      shell: bash
+
+    - name: Create Tar Artifact for ${{ inputs.image }}
+      run: docker save ${{ inputs.image }}:latest -o ${{ inputs.image }}.tar
+      shell: bash
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.image }}-image
+        path: ${{ inputs.image }}.tar
+        retention-days: 1

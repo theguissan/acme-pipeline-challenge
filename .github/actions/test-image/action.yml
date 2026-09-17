@@ -1,0 +1,25 @@
+name: Test docker image
+description: Test given docker image using trivy
+
+
+inputs:
+  image:
+    required: true
+
+
+runs:
+  using: composite
+  steps:
+
+    - name: Download Docker Images
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.image }}-image
+
+    - name: Load Docker images
+      run: docker load -i ${{ inputs.image }}.tar
+      shell: bash
+      
+    - uses: ./.github/actions/run-trivy-scan
+      with:
+        image: ${{ inputs.image }}:latest

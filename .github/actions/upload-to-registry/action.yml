@@ -1,0 +1,40 @@
+name: Upload Image to ECR
+description: Upload defined image to registry
+
+
+# TODO add image version input!!!
+inputs:
+  image:
+    required: true
+    description: Image to be uploaded
+
+  aws-account-id:
+    required: true
+    description: AWS Id to login and publish image to ECR
+
+  aws-region:
+    required: true
+    description: Region to be published
+
+runs:
+  using: composite 
+  steps: 
+
+    - name: Download image
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.image }}
+    
+    - name: Load docker images
+      run: docker load -i ${{ inputs.image }}.tar
+      shell: bash
+
+    - name: Publish Docker Image to ECR
+      env:
+        AWS_ACCOUNT_ID: ${{ inputs.aws-account-id }}
+        AWS_REGION: ${{ inputs.aws-region }}
+      run: |
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+          docker tag ${{ inputs.image }}:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/${{ inputs.image }}:latest
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/${{ inputs.image }}:latest
+      shell: bash
