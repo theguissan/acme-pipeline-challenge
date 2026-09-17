@@ -17,6 +17,10 @@ jobs:
   build:
     if: github.ref != 'refs/heads/develop'
     uses: ./.github/workflows/build-microservices-images.yml
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
     needs: [tests]
     with:
       services: '["microservice1", "microservice2"]'
+      region: ${{ vars.AWS_REGION }}
