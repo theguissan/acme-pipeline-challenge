@@ -1,0 +1,19 @@
+name: Notify actors
+description: Send E-mail to defined user
+
+inputs:
+  email:
+    required: true
+  message:
+    required: true
+  title:
+    required: true
+
+runs:
+  using: composite
+  steps:
+
+    - name: Send Notification
+      run: echo ${{ inputs.message }} | mail -S ${{ inputs.title}} ${{inputs.message}}
+      shell: bash
+
