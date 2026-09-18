@@ -11,8 +11,19 @@ jobs:
       - uses: ./.github/actions/run-primary-tests
 
   run-sonar-scan:
-    if: github.ref != 'refs/heads/develop'
+    if: success() && github.ref != 'refs/heads/develop'
     needs: [run-primary-tests]
     uses: ./.github/workflows/run-sonar.yml
     secrets:
-      SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  notify-errors:
+    if: failure()
+    runs-on: ubuntu-latest
+    needs: [run-primary-tests, run-sonar-scan]
+    steps:
+      - uses: ./.github/actions/notify
+        with:
+          email: ${{ github.event.sender.login }}@acme.com
+          message: "Tests Failed. Please verify here: https://${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          title: 'Tests Failed'

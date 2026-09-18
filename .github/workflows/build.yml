@@ -52,3 +52,14 @@ jobs:
           image: ${{ matrix.service }}
           aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
           aws-region: ${{ inputs.region }}
+        
+  notify-errors:
+    if: failure()
+    needs: [build-images, test-images, upload-images]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/notify
+        with:
+          email: team@acme.com
+          message: "Build Failed. Please verify here: https://${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          title: 'Build on ${{github.repository}} Failed'
