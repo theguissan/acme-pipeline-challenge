@@ -11,14 +11,15 @@ runs:
 
     - name: Apply terraform
       run: |
-        cd terraform/${{inputs.environment}}
+        cd terraform/${{ inputs.environment }}
         terraform init
         terraform apply -auto-approve
       shell: bash
 
     - name: Notify
+      if: success()
       uses: ./.github/actions/notify
       with:
         email: team@acme.com
-        message: "Deploy of ${{github.repository}} on ${{ inputs.environment }} done. You can verify logs here: https://${{ github.repository }}/actions/runs/${{ github.run_id }}"
-        title: "Deploy of ${{github.repository}} on ${{ inputs.environment }} done"
+        message: "Deploy of ${{ github.repository }} on ${{ inputs.environment }} done. You can verify logs here: https://${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        title: "Deploy of ${{ github.repository }} on ${{ inputs.environment }} done"
