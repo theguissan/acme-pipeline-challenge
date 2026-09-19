@@ -9,18 +9,25 @@ on:
 
 jobs:
 
-  tests:
+  test:
     uses: ./.github/workflows/test.yml
     secrets:  
       SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
 
   build:
-    if: github.ref != 'refs/heads/develop'
+    if: success() && github.ref != 'refs/heads/develop'
     uses: ./.github/workflows/build.yml
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
-    needs: [tests]
+    needs: [test]
     with:
       services: '["microservice1", "microservice2"]'
       region: ${{ vars.AWS_REGION }}
+  
+  cd:
+    if: success() && github.ref != 'refs/heads/develop'
+    needs: [test, build]
+    uses: ./.github/workflows/cd.yml
+    with:
+      target-environment: ${{ case(github.ref == 'refs/heads/main', 'prod', 'staging') }}
